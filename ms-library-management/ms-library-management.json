@@ -1,0 +1,82 @@
+{
+
+  "WEB_HOST": "https://qakerno.sekura.mx",
+  "WEB_HOST_CKS": "https://localhost",
+
+  "PORT_CONFIGURATION": "",
+  "PORT_CUSTOMER": "",
+  "PORT_USER": "",
+  "PORT_TICKET": "",
+  "PORT_WORK_ORDER": "",
+
+  "PORT_EM": ":7008",
+
+  "service": {
+    "GET_BOOKS" : "/library-management/books",
+
+    "POST_REGISTER_CLIENT" : "/endpoint-kerno/customer/register",
+    "DELETE_CLIENT_BY_ID" : "/endpoint-kerno/customer/:customerId/delete",
+    "DELETE_CLIENT_CONTACT_BY_ID" : "/endpoint-kerno/customer/contact/:contactId/delete",
+
+    "POST_GET_GROUP_DATA" : "/endpoint-kerno/grouper/get/full/data",
+    "POST_REGISTER_GROUP" : "/endpoint-kerno/grouper/register",
+    "POST_UPDATE_GROUP" : "/endpoint-kerno/updateGroup",
+    "DELETE_GROUPER_BY_ID" : "/endpoint-kerno/grouper/:grouperId/delete",
+
+    "POST_UPSERT_WORK_ORDER" : "/endpoint-kerno/workorders/upsert",
+    "DELETE_WORK_ORDER_BY_ID" : "/endpoint-kerno/workorders/:workOrderId/delete",
+
+    "POST_REGISTER_CRM_TICKET": "/endpoint-kerno/tickets/registerCRMTicket",
+    "POST_REPLY_TICKET_EVENT": "/endpoint-kerno/tickets/replyTicketEvent",
+    "POST_TICKET_ATTACH_FILES": "/endpoint-kerno/ticket/attach/file",
+
+    "POST_START_GROUPER_UPLOAD_TO_CRM": "/endpoint-kerno/start/grouper/upload",
+    "POST_START_CUSTOMER_UPLOAD_TO_CRM": "/endpoint-kerno/start/customer/upload",
+    "POST_START_WO_UPLOAD_TO_CRM": "/endpoint-kerno/start/wo/upload",
+
+    "API_DOC_HOST": "localhost",
+    "port": 8000
+  },
+
+  "consume": {
+    "GET_GROUPER" : "/grouper/:groupId",
+    "GET_GROUP_ONLY_TYPE_GROUPER": "/grouper/:groupId/only/group/type",
+    "GET_ATTENTION_STRUCTURE" : "/attention_structure/:attentionStructureId",
+    "GET_ATTENTION_EXECUTIVE" : "/users/:attentionExecutive",
+    "GET_PAYMENT_DATA" : "/customers/:customerId/paymentdata",
+    "GET_CONTACT_DATA" : "/customers/:customerId/contact",
+    "GET_CONTACT_PHONES": "/customers/contact/:contactId/phone",
+    "GET_CONTACT_EMAILS": "/customers/contact/:contactId/email",
+    "GET_EMAIL_DATA" : "/customers/:customerId/email",
+    "GET_PHONE_DATA" : "/customers/:customerId/phone",
+    "GET_ADDRESS_DATA" : "/customers/:customerId/address",
+
+    "GET_KERNO_TICKET": "/tickets/:ticketId/",
+
+    "POST_SEND_TICKET_TO_KERNO": "/tickets/crmTicket",
+
+    "GET_GROUPER_PAGINATION": "/grouper/pagination",
+    "GET_CUSTOMERS_PAGINATION": "/customers/pagination",
+
+    "WORK_ORDER_GET_BY_ID": "/workorders/:workOrderId",
+    "WORK_ORDER_GET_CRM_DATA":  "/workorders/:workOrderId/crm/data",
+    "WORK_ORDER_GET_COVERAGE": "/workorders/:workOrderId/coverage",
+    "WORK_ORDER_GET_INSURED": "/workorders/:workOrderId/insured/full?pOrder=&pSize=5&pStart=0",
+    "WORK_ORDER_GET_VEHICLE_DATA": "/workorders/:workOrderId/sections/vehicledata/list/full?pOrder=&pSize=5&pStart=0",
+    "WORK_ORDER_GET_WO_ID_LIST_TO_LOAD": "/workorders/id/list/:pageNumber/:recordsPerPage",
+    "WORK_ORDER_GET_CANCELLATION_DETAIL": "/workorders/:workOrderId/cancellation/detail",
+
+    "EM_POST_CLIENT_EVENT": "/event-management/publish/customer/event",
+    "EM_POST_GROUPER_EVENT": "/event-management/publish/group/event",
+    "EM_POST_WORK_ORDER_EVENT": "/event-management/publish/wo/event",
+    "EM_POST_TICKET_EVENT" : "/event-management/publish/ticket/event",
+    "EM_POST_ATTACH_FILES_TO_TICKET": "/event-management/publish/ticket/event/attach/file"
+  },
+
+  "source": {
+    "ID" : "kernoapp",
+    "PASSWORD" : "Skr123.",
+    "CRM_KERNO_BOT_ID": "3621"
+  }
+
+}
