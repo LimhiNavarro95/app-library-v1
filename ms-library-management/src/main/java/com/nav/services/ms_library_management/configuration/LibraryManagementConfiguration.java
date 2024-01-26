@@ -22,6 +22,10 @@ public class LibraryManagementConfiguration {
     this.service = config.getJsonObject("service");
   }
 
+  /**
+   * Configuracion del router del servicio
+   * @return Router
+   */
   public Router configurationRouter() {
     Router router = Router.router(vertx);
     router.route().consumes(APPLICATION_JSON);
@@ -46,6 +50,10 @@ public class LibraryManagementConfiguration {
 
   public Integer getPort(){
     return service.getInteger("port");
+  }
+
+  public String getApiMessage() {
+    return service.getString("api_message");
   }
 
 }
