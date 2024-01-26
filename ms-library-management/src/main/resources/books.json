@@ -1,0 +1,27 @@
+[
+  {
+    "bookName": "Cien años de soledad",
+    "author": "Gabriel García Márquez",
+    "releaseDate": "2022-01-01"
+  },
+  {
+    "bookName": "El señor de los anillos",
+    "author": "J. R. R. Tolkien",
+    "releaseDate": "2023-02-15"
+  },
+  {
+    "bookName": "Un mundo feliz",
+    "author": "Aldous Huxley",
+    "releaseDate": "2020-11-30"
+  },
+  {
+    "bookName": "Orgullo y prejuicio",
+    "author": "Jane Austen",
+    "releaseDate": "2021-07-22"
+  },
+  {
+    "bookName": "Don Quijote de la Mancha",
+    "author": "Miguel de Cervantes",
+    "releaseDate": "2019-04-10"
+  }
+]

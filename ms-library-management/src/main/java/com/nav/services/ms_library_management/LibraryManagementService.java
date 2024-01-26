@@ -1,5 +1,6 @@
 package com.nav.services.ms_library_management;
 
+import com.nav.services.ms_library_management.business.LibraryBusiness;
 import com.nav.services.ms_library_management.configuration.LibraryManagementConfiguration;
 import com.nav.services.ms_library_management.controller.LibraryController;
 import io.vertx.core.AbstractVerticle;
@@ -16,7 +17,9 @@ public class LibraryManagementService extends AbstractVerticle {
 
     JsonObject config = config();
 
-    LibraryController libraryController = new LibraryController();
+    LibraryBusiness libraryBusiness = new LibraryBusiness(vertx);
+
+    LibraryController libraryController = new LibraryController(libraryBusiness);
 
     LibraryManagementConfiguration configuration = new LibraryManagementConfiguration(vertx, libraryController, config);
 
@@ -26,13 +29,12 @@ public class LibraryManagementService extends AbstractVerticle {
   //Inicializar servicio
   public void run(Router router, Integer port) {
     System.out.println("Run!!");
-    //SelfSignedCertificate certificate = SelfSignedCertificate.create();
 
-    vertx.createHttpServer(
-        new HttpServerOptions()
+    vertx.createHttpServer(new HttpServerOptions()
             .setSsl(true)
-            .setKeyCertOptions(new JksOptions().setPassword("libraryCertificate").setPath("keystore.jks")))
-            //.setTrustOptions(certificate.trustOptions()))
+            .setKeyCertOptions(new JksOptions()
+                .setPassword("libraryCertificate")
+                .setPath("keystore.jks")))
         .requestHandler(router)
         .listen(port);
   }
