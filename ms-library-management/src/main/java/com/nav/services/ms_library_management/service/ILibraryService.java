@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ILibraryService {
   Future<List<Book>> obtainBooksList();
+  Future<Book> findBookByLikeObject(String entity);
 }

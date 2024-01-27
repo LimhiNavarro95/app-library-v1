@@ -4,7 +4,6 @@ import com.nav.services.ms_library_management.model.Book;
 import com.nav.services.ms_library_management.repository.BookRepository;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +26,7 @@ public class LibraryServiceImpl implements ILibraryService {
    * Se obtiene la lista de libros a traves de la capa de datos
    * @return Future<List<Book>>
    */
+  @Override
   public Future<List<Book>> obtainBooksList() {
     Promise<List<Book>> promise = Promise.promise();
 
@@ -37,6 +37,28 @@ public class LibraryServiceImpl implements ILibraryService {
         promise.complete(books);
       } else {
         logger.error("Error obteniendo la lista de libros", ar.cause());
+        promise.fail(ar.cause());
+      }
+    });
+
+    return promise.future();
+  }
+
+  /**
+   * Se obtiene un libro a traves de la capa de datos
+   * @return Future<Book>
+   */
+  @Override
+  public Future<Book> findBookByLikeObject(String entity) {
+
+    Promise<Book> promise = Promise.promise();
+
+    bookRepository.findbyLikeObject(entity).onComplete(ar -> {
+      if (ar.succeeded()) {
+        Book bookFinded = ar.result();
+        promise.complete(bookFinded);
+      } else {
+        logger.error("Error obteniendo libro por " + entity, ar.cause());
         promise.fail(ar.cause());
       }
     });

@@ -1,7 +1,10 @@
 {
 
   "service": {
-    "GET_BOOKS" : "/library-management/books",
+    "SERVICE_URI": "/v1/library-management",
+
+    "GET_BOOKS" : "/books",
+    "GET_BOOK_BY_LIKE_OBJ" : "/bookByLike",
 
     "port": 8000,
 

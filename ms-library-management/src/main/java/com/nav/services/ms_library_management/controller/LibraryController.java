@@ -39,16 +39,44 @@ public class LibraryController {
             .putHeader("content-type", "application/json")
             .setStatusCode(200)
             .end(Json.encodePrettily(books));
-        logger.info("proceso finalizado correctamente");
+        logger.info("proceso finalizado correctamente de obtencion de libros");
 
       } else {
-
         routingContext.response()
             .putHeader("content-type", "application/json")
             .setStatusCode(400)
             .end();
         logger.info("error en el proceso");
+      }
+    });
+  }
 
+  /**
+   * Endpoint de GET obtener un libro almacenados en el JSON por medio de libro, autor o fecha
+   * @param routingContext objeto con datos de la solicitud entrante
+   */
+  public void getBookByLikeObject(RoutingContext routingContext){
+
+    String entity = routingContext.request().getParam("entity");
+
+    Promise<Book> promise = Promise.promise();
+
+    libraryService.findBookByLikeObject(entity).onComplete(ar -> {
+      if (ar.succeeded()) {
+        Book bookFinded = ar.result();
+        promise.complete(bookFinded);
+
+        routingContext.response()
+            .putHeader("content-type", "application/json")
+            .setStatusCode(200)
+            .end(Json.encodePrettily(bookFinded));
+        logger.info("proceso finalizado correctamente de obtencion de libro por Objeto");
+      } else {
+        routingContext.response()
+            .putHeader("content-type", "application/json")
+            .setStatusCode(400)
+            .end();
+        logger.info("error en el proceso");
       }
     });
   }

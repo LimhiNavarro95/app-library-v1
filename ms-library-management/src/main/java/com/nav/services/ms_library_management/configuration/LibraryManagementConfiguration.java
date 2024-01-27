@@ -43,7 +43,10 @@ public class LibraryManagementConfiguration {
         .allowedHeader("Access-Control-Allow-Headers")
         .allowedHeader("Content-Type"));
 
-    router.get(service.getString("GET_BOOKS")).handler(libraryController::getBooks);
+    String serviceURI = service.getString("SERVICE_URI");
+
+    router.get(serviceURI + service.getString("GET_BOOKS")).handler(libraryController::getBooks);
+    router.get(serviceURI + service.getString("GET_BOOK_BY_LIKE_OBJ")).handler(libraryController::getBookByLikeObject);
 
     return router;
   }
