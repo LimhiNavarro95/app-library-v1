@@ -49,6 +49,7 @@ public class LibraryManagementConfiguration {
     router.get(serviceURI + service.getString("GET_BOOK_BY_LIKE_OBJ")).handler(libraryController::getBookByLikeObject);
     router.post(serviceURI + service.getString("POST_REGISTER_BOOK")).handler(libraryController::postRegisterBook);
     router.put(serviceURI + service.getString("PUT_UPDATE_BOOK")).handler(libraryController::putModifyBook);
+    router.delete(serviceURI + service.getString("DELETE_BOOK")).handler(libraryController::deleteBook);
 
     return router;
   }

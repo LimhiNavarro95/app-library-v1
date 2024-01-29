@@ -93,7 +93,7 @@ public class LibraryServiceImpl implements ILibraryService {
    */
   @Override
   public Future<Book> deleteBook(Book book) {
-    return null;
+    return bookRepository.delete(book);
   }
 
 }

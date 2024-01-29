@@ -91,6 +91,10 @@ public class LibraryController {
     });
   }
 
+  /**
+   * Endpoint de POST para registrar un libro
+   * @param routingContext objeto con datos de la solicitud entrante, en request body se encuentra el entity
+   */
   public void postRegisterBook(RoutingContext routingContext) {
     try {
       // Se obtiene el cuerpo de la solicitud como JSON y se convierte a un objeto Book
@@ -104,7 +108,7 @@ public class LibraryController {
               .putHeader("content-type", "application/json")
               .setStatusCode(200)
               .end(Json.encodePrettily(bookRegistered));
-          logger.info("proceso finalizado correctamente de registro de libro ->\n" + bookRegistered.toString());
+          logger.info("proceso finalizado correctamente de registro el libro ->\n" + bookRegistered.toString());
         } else {
           routingContext.response()
               .setStatusCode(400)
@@ -120,6 +124,10 @@ public class LibraryController {
     }
   }
 
+  /**
+   * Endpoint de PUT para actualizar un libro
+   * @param routingContext objeto con datos de la solicitud entrante, en request body se encuentra el entity
+   */
   public void putModifyBook(RoutingContext routingContext) {
     try {
       // Se obtiene el cuerpo de la solicitud como JSON y se convierte a un objeto Book
@@ -133,7 +141,40 @@ public class LibraryController {
               .putHeader("content-type", "application/json")
               .setStatusCode(200)
               .end(Json.encodePrettily(bookUpdated));
-          logger.info("proceso finalizado correctamente de actualizar de libro" + bookUpdated.toString());
+          logger.info("proceso finalizado correctamente de actualizar el libro ->\n" + bookUpdated.toString());
+        } else {
+          routingContext.response()
+              .setStatusCode(400)
+              .end();
+        }
+      });
+
+    } catch (Exception e) {
+      // Manejar cualquier excepción que pueda ocurrir al decodificar el JSON
+      routingContext.response()
+          .setStatusCode(400)
+          .end("Error al procesar el cuerpo de la solicitud");
+    }
+  }
+
+  /**
+   * Endpoint de DELETE para borrar un libro
+   * @param routingContext objeto con datos de la solicitud entrante, en request body se encuentra el entity
+   */
+  public void deleteBook(RoutingContext routingContext) {
+    try {
+      // Se obtiene el cuerpo de la solicitud como JSON y se convierte a un objeto Book
+      Book book = Json.decodeValue(routingContext.getBodyAsString(), Book.class);
+
+      // Llama al método correspondiente de tu servicio
+      libraryService.deleteBook(book).onComplete(ar -> {
+        if (ar.succeeded()) {
+          Book bookUpdated = ar.result();
+          routingContext.response()
+              .putHeader("content-type", "application/json")
+              .setStatusCode(200)
+              .end(Json.encodePrettily(bookUpdated));
+          logger.info("proceso finalizado correctamente de borrar el libro ->\n" + bookUpdated.toString());
         } else {
           routingContext.response()
               .setStatusCode(400)

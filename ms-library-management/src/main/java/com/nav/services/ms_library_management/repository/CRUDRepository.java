@@ -16,6 +16,6 @@ public interface CRUDRepository<T> {
 
   Future<T> update(T t);
 
-  Future<T> delete(String entity);
+  Future<T> delete(T t);
 
 }

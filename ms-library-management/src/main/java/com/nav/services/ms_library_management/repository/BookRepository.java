@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -270,12 +271,52 @@ public class BookRepository implements CRUDRepository<Book> {
 
   /**
    * Borrado de un registro con base a su coincidencia
-   * @param entity entidad a borrar
+   * @param bookToDelete entidad a borrar
    * @return Future<Book>
    */
   @Override
-  public Future<Book> delete(String entity) {
-    return null;
+  public Future<Book> delete(Book bookToDelete) {
+    Promise<Book> promise = Promise.promise();
+
+    // Obtener la lista actual de libros
+    readBooksFromFile().onComplete(readAr -> {
+      if (readAr.succeeded()) {
+        List<Book> books = readAr.result();
+
+        // Iterar sobre la lista de libros
+        Iterator<Book> iterator = books.iterator();
+        while (iterator.hasNext()) {
+          Book existingBook = iterator.next();
+
+          // Verificar si el libro coincide con el libro proporcionado
+          if (existingBook.equals(bookToDelete)) {
+            // Eliminar el libro de la lista
+            iterator.remove();
+
+            // Escribir la lista actualizada en el archivo
+            writeBooksToFile(books).onComplete(writeAr -> {
+              if (writeAr.succeeded()) {
+                // Completar la promesa con el libro eliminado
+                promise.complete(existingBook);
+              } else {
+                promise.fail(writeAr.cause());
+              }
+            });
+
+            // Terminar la búsqueda después de la primera coincidencia
+            return;
+          }
+        }
+
+        // Si no se encuentra el libro, completar la promesa con un fallo
+        promise.fail("Libro no encontrado para eliminar");
+      } else {
+        // Manejar error al obtener la lista de libros
+        promise.fail(readAr.cause());
+      }
+    });
+
+    return promise.future();
   }
 
 }
