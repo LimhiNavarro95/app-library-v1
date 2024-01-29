@@ -9,4 +9,6 @@ public interface ILibraryService {
   Future<List<Book>> obtainBooksList();
   Future<Book> findBookByLikeObject(String entity);
   Future<Book> registerBook(Book book);
+  Future<Book> updateBook(Book book);
+  Future<Book> deleteBook(Book book);
 }

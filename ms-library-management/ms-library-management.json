@@ -6,6 +6,7 @@
     "GET_BOOKS" : "/books",
     "GET_BOOK_BY_LIKE_OBJ" : "/bookByLike",
     "POST_REGISTER_BOOK": "/registerBook",
+    "PUT_UPDATE_BOOK": "/updateBook",
 
     "port": 8000,
 

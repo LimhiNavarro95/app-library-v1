@@ -66,9 +66,34 @@ public class LibraryServiceImpl implements ILibraryService {
     return promise.future();
   }
 
+  /**
+   * Se realiza el registro del libro
+   * @param book entity a registar
+   * @return Future<Book>
+   */
+  @Override
   public Future<Book> registerBook(Book book) {
-    // Llama al método correspondiente de tu repositorio
     return bookRepository.create(book);
+  }
+
+  /**
+   * Se realiza el
+   * @param book entity a actualizar
+   * @return Future<Book>
+   */
+  @Override
+  public Future<Book> updateBook(Book book) {
+    return bookRepository.update(book);
+  }
+
+  /**
+   *
+   * @param book entity a borrar
+   * @return Future<Book>
+   */
+  @Override
+  public Future<Book> deleteBook(Book book) {
+    return null;
   }
 
 }

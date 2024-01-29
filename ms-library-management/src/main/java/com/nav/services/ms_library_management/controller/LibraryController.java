@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Capa Controller donde se encuentran los endpoints de la aplicacion
@@ -66,10 +67,19 @@ public class LibraryController {
         Book bookFinded = ar.result();
         promise.complete(bookFinded);
 
-        routingContext.response()
-            .putHeader("content-type", "application/json")
-            .setStatusCode(200)
-            .end(Json.encodePrettily(bookFinded));
+        //dependiendo si fue encontrado el libro buscado, se establece el tipo de respuesta
+        if (!Objects.isNull(bookFinded)){
+          routingContext.response()
+              .putHeader("content-type", "application/json")
+              .setStatusCode(200)
+              .end(Json.encodePrettily(bookFinded));
+        } else {
+          routingContext.response()
+              .putHeader("content-type", "application/json")
+              .setStatusCode(204)
+              .end(Json.encodePrettily(bookFinded));
+        }
+
         logger.info("proceso finalizado correctamente de obtencion de libro por Objeto");
       } else {
         routingContext.response()
@@ -94,7 +104,36 @@ public class LibraryController {
               .putHeader("content-type", "application/json")
               .setStatusCode(200)
               .end(Json.encodePrettily(bookRegistered));
-          logger.info("proceso finalizado correctamente de libro ->\n" + bookRegistered.toString());
+          logger.info("proceso finalizado correctamente de registro de libro ->\n" + bookRegistered.toString());
+        } else {
+          routingContext.response()
+              .setStatusCode(400)
+              .end();
+        }
+      });
+
+    } catch (Exception e) {
+      // Manejar cualquier excepción que pueda ocurrir al decodificar el JSON
+      routingContext.response()
+          .setStatusCode(400)
+          .end("Error al procesar el cuerpo de la solicitud");
+    }
+  }
+
+  public void putModifyBook(RoutingContext routingContext) {
+    try {
+      // Se obtiene el cuerpo de la solicitud como JSON y se convierte a un objeto Book
+      Book book = Json.decodeValue(routingContext.getBodyAsString(), Book.class);
+
+      // Llama al método correspondiente de tu servicio
+      libraryService.updateBook(book).onComplete(ar -> {
+        if (ar.succeeded()) {
+          Book bookUpdated = ar.result();
+          routingContext.response()
+              .putHeader("content-type", "application/json")
+              .setStatusCode(200)
+              .end(Json.encodePrettily(bookUpdated));
+          logger.info("proceso finalizado correctamente de actualizar de libro" + bookUpdated.toString());
         } else {
           routingContext.response()
               .setStatusCode(400)

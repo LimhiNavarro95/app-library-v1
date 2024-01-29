@@ -14,8 +14,8 @@ public interface CRUDRepository<T> {
   Future<T> findbyLikeObject(String entity);
   Future<List<T>> findAll();
 
-  Future<?> update(T t);
+  Future<T> update(T t);
 
-  Future<?> delete(String entity);
+  Future<T> delete(String entity);
 
 }

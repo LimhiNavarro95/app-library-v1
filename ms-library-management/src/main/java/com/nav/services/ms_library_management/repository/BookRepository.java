@@ -47,7 +47,11 @@ public class BookRepository implements CRUDRepository<Book> {
     return ConfigRetriever.create(vertx, options);
   }
 
-
+  /**
+   * Registro de libro en la BD
+   * @param book entity
+   * @return Future<Book>
+   */
   @Override
   public Future<Book> create(Book book) {
     Promise<Book> promise = Promise.promise();
@@ -79,6 +83,10 @@ public class BookRepository implements CRUDRepository<Book> {
     return promise.future();
   }
 
+  /**
+   * Se lee la lista de libros actuales del archivo
+   * @return Future<List<Book>>
+   */
   private Future<List<Book>> readBooksFromFile() {
     Promise<List<Book>> readPromise = Promise.promise();
 
@@ -108,6 +116,11 @@ public class BookRepository implements CRUDRepository<Book> {
     return readPromise.future();
   }
 
+  /**
+   * Metodo de utilidad que realiza la escritura en el archivo
+   * @param books entity
+   * @return Future<Void>
+   */
   private Future<Void> writeBooksToFile(List<Book> books) {
     Promise<Void> writePromise = Promise.promise();
 
@@ -205,13 +218,63 @@ public class BookRepository implements CRUDRepository<Book> {
     return promise.future();
   }
 
+  /**
+   * Actualizacion de un registro con base a su coincidencia
+   * @param updatedBook
+   * @return Future<Book>
+   */
   @Override
-  public Future<?> update(Book book) {
-    return null;
+  public Future<Book> update(Book updatedBook) {
+    Promise<Book> promise = Promise.promise();
+
+    // Obtener la lista actual de libros
+    readBooksFromFile().onComplete(readAr -> {
+      if (readAr.succeeded()) {
+        List<Book> books = readAr.result();
+
+        // Buscar el libro que coincide con el bookName o author del libro a actualizar
+        for (Book existingBook : books) {
+          if (existingBook.getBookName().equalsIgnoreCase(updatedBook.getBookName())
+              || existingBook.getAuthor().equalsIgnoreCase(updatedBook.getAuthor())) {
+
+            // Actualizar el libro existente con los nuevos valores
+            existingBook.setBookName(updatedBook.getBookName());
+            existingBook.setAuthor(updatedBook.getAuthor());
+            existingBook.setReleaseDate(updatedBook.getReleaseDate());
+
+            // Escribir la lista actualizada en el archivo
+            writeBooksToFile(books).onComplete(writeAr -> {
+              if (writeAr.succeeded()) {
+                // Completa la promesa con el libro actualizado después de la escritura
+                promise.complete(existingBook);
+              } else {
+                promise.fail(writeAr.cause());
+              }
+            });
+
+            // Termina la búsqueda después de la primera coincidencia
+            return;
+          }
+        }
+
+        // Si no se encuentra el libro, completar la promesa con un fallo
+        promise.fail("Libro no encontrado para actualizar");
+      } else {
+        // Manejar error al obtener la lista de libros
+        promise.fail(readAr.cause());
+      }
+    });
+
+    return promise.future();
   }
 
+  /**
+   * Borrado de un registro con base a su coincidencia
+   * @param entity entidad a borrar
+   * @return Future<Book>
+   */
   @Override
-  public Future<?> delete(String entity) {
+  public Future<Book> delete(String entity) {
     return null;
   }
 
