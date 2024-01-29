@@ -81,4 +81,33 @@ public class LibraryController {
     });
   }
 
+  public void postRegisterBook(RoutingContext routingContext) {
+    try {
+      // Se obtiene el cuerpo de la solicitud como JSON y se convierte a un objeto Book
+      Book book = Json.decodeValue(routingContext.getBodyAsString(), Book.class);
+
+      // Llama al método correspondiente de tu servicio
+      libraryService.registerBook(book).onComplete(ar -> {
+        if (ar.succeeded()) {
+          Book bookRegistered = ar.result();
+          routingContext.response()
+              .putHeader("content-type", "application/json")
+              .setStatusCode(200)
+              .end(Json.encodePrettily(bookRegistered));
+          logger.info("proceso finalizado correctamente de libro ->\n" + bookRegistered.toString());
+        } else {
+          routingContext.response()
+              .setStatusCode(400)
+              .end();
+        }
+      });
+
+    } catch (Exception e) {
+      // Manejar cualquier excepción que pueda ocurrir al decodificar el JSON
+      routingContext.response()
+          .setStatusCode(400)
+          .end("Error al procesar el cuerpo de la solicitud");
+    }
+  }
+
 }

@@ -66,4 +66,9 @@ public class LibraryServiceImpl implements ILibraryService {
     return promise.future();
   }
 
+  public Future<Book> registerBook(Book book) {
+    // Llama al método correspondiente de tu repositorio
+    return bookRepository.create(book);
+  }
+
 }

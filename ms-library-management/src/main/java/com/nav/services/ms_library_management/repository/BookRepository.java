@@ -8,11 +8,14 @@ import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,7 +50,87 @@ public class BookRepository implements CRUDRepository<Book> {
 
   @Override
   public Future<Book> create(Book book) {
-    return null;
+    Promise<Book> promise = Promise.promise();
+
+    // Obtener la lista actual de libros
+    readBooksFromFile().onComplete(readAr -> {
+      if (readAr.succeeded()) {
+        List<Book> books = readAr.result();
+
+        // Agregar el nuevo libro a la lista
+        books.add(book);
+
+        // Escribir la lista actualizada en el archivo
+        writeBooksToFile(books).onComplete(writeAr -> {
+          if (writeAr.succeeded()) {
+            // Completar la promesa con el libro creado
+            promise.complete(book);
+          } else {
+            // Manejar error al escribir en el archivo
+            promise.fail(writeAr.cause());
+          }
+        });
+      } else {
+        // Manejar error al obtener la lista de libros
+        promise.fail(readAr.cause());
+      }
+    });
+
+    return promise.future();
+  }
+
+  private Future<List<Book>> readBooksFromFile() {
+    Promise<List<Book>> readPromise = Promise.promise();
+
+    // Ruta del archivo JSON
+    Path filePath = Paths.get("db/books.json");
+
+    // Leer el contenido del archivo
+    vertx.fileSystem().readFile(filePath.toString(), readAr -> {
+      if (readAr.succeeded()) {
+        try {
+          String fileContent = readAr.result().toString();
+          JsonArray jsonArray = new JsonArray(fileContent);
+
+          // Convertir el JsonArray a una lista de objetos Book
+          List<Book> books = jsonArray.stream()
+              .map(json -> ((JsonObject) json).mapTo(Book.class))
+              .collect(Collectors.toList());
+          readPromise.complete(books);
+        } catch (Exception e) {
+          readPromise.fail(e);
+        }
+      } else {
+        readPromise.fail(readAr.cause());
+      }
+    });
+
+    return readPromise.future();
+  }
+
+  private Future<Void> writeBooksToFile(List<Book> books) {
+    Promise<Void> writePromise = Promise.promise();
+
+    // Ruta del archivo JSON
+    Path filePath = Paths.get("db/books.json");
+
+    // Convertir la lista de libros a un JsonArray
+    JsonArray jsonArray = new JsonArray(books.stream().map(JsonObject::mapFrom).collect(Collectors.toList()));
+
+    // Convertir el JsonArray a una cadena y luego a un buffer
+    String jsonString = jsonArray.encode();
+    Buffer buffer = Buffer.buffer(jsonString);
+
+    // Escribir el buffer en el archivo
+    vertx.fileSystem().writeFile(filePath.toString(), buffer, writeAr -> {
+      if (writeAr.succeeded()) {
+        writePromise.complete();
+      } else {
+        writePromise.fail(writeAr.cause());
+      }
+    });
+
+    return writePromise.future();
   }
 
   /**
@@ -95,31 +178,31 @@ public class BookRepository implements CRUDRepository<Book> {
   public Future<List<Book>> findAll() {
     Promise<List<Book>> promise = Promise.promise();
 
-    // Configuración para cargar el contenido del archivo JSON
-    ConfigRetriever configRetriever = createFileConfigRetriever("db/books.json");
+    // Ruta del archivo JSON
+    Path filePath = Paths.get("db/books.json");
 
-    // Lectura del contenido del archivo JSON
-    try {
-      configRetriever.getConfig(ar -> {
-        if (ar.succeeded()) {
-          List<Book> books = parseJsonArray(ar.result().getJsonArray("books"));
+    // Leer el contenido del archivo
+    vertx.fileSystem().readFile(filePath.toString(), readAr -> {
+      if (readAr.succeeded()) {
+        try {
+          String fileContent = readAr.result().toString();
+          JsonArray jsonArray = new JsonArray(fileContent);
+
+          // Convertir el JsonArray a una lista de objetos Book
+          List<Book> books = jsonArray.stream()
+              .map(json -> ((JsonObject) json).mapTo(Book.class))
+              .collect(Collectors.toList());
           promise.complete(books);
-        } else {
-          promise.fail(ar.cause());
+
+        } catch (Exception e) {
+          promise.fail(e);
         }
-      });
-    } catch (Exception e) {
-      logger.error(e.getMessage());
-    }
+      } else {
+        promise.fail(readAr.cause());
+      }
+    });
 
     return promise.future();
-  }
-
-  // Metodo para convertir un JsonArray a una lista de objetos Book
-  private List<Book> parseJsonArray(JsonArray jsonArray) {
-    return jsonArray.stream()
-        .map(json -> ((JsonObject) json).mapTo(Book.class))
-        .collect(Collectors.toList());
   }
 
   @Override

@@ -47,6 +47,7 @@ public class LibraryManagementConfiguration {
 
     router.get(serviceURI + service.getString("GET_BOOKS")).handler(libraryController::getBooks);
     router.get(serviceURI + service.getString("GET_BOOK_BY_LIKE_OBJ")).handler(libraryController::getBookByLikeObject);
+    router.post(serviceURI + service.getString("POST_REGISTER_BOOK")).handler(libraryController::postRegisterBook);
 
     return router;
   }
